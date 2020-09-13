@@ -124,7 +124,7 @@ onload = function () {
         // Create new data and display the data
         createData();
         network.setData(curr_data);
-        temptext2.innerText = 'Find least time path from '+cities[src-1]+' to '+cities[dst-1];
+        temptext2.innerText = 'Source Node : '+cities[src-1]+', Destination Node : '+cities[dst-1];
         temptext.style.display = "inline";
         temptext2.style.display = "inline";
         container2.style.display = "none";
@@ -316,32 +316,43 @@ onload = function () {
 
 
     function dfs(graph , src , dst ){
-        let stack = [] ; 
+        let stack = []; 
         let ansdata = [] ;
-        let vis = Array(V).fill(0) ; 
+        let vis = Array(V).fill(0) ;
 
-
-        stack.unshift(src) ; 
+        // src= 0 ;
+         
+        stack.unshift([src]);
         vis[src] = 1 ; 
         
-        while(stack.length !=0 ){
+        while(stack.length != 0 ){
 
-            let item = stack.shift() ; 
-            ansdata.push(item)   ; 
-            if(item === dst){
+            console.log("hello");
+            var item = stack.shift() ; 
+            console.log(item) ; 
+            var lastelement = item[item.length - 1] ; 
+            vis[lastelement] = 1;
+            if(lastelement == dst){
+                ansdata = [...item]; 
+                console.log(ansdata) ; 
+                console.log(ansdata.length);
                 break ; 
+                
             }
-            for(let j in graph[item]){
-                let edge = graph[item][j] ; 
+            
+            for(let j in graph[lastelement]){
+                var edge = graph[lastelement][j] ; 
                 if(vis[edge[0]] === 0){
-                    stack.unshift(edge[0])  ; 
-                    vis[edge[0]] = 1 ; 
+                    nums = [...item] ; 
+                    nums.push(edge[0]) ; 
+                   
+                    stack.unshift(nums)  ; 
+                     
                 }
             }
 
 
         }
-        console.log(ansdata)
 
         return ansdata ; 
 
@@ -392,7 +403,7 @@ onload = function () {
 
         for(let i =1 ; i < dfsans.length ; i++){
 
-            new_edgesbfs.push({arrows : { to : {enabled : true}} , from: i-1 , to : i ,  color: 'orange'}) ; 
+            new_edgesbfs.push({arrows : { to : {enabled : true}} , from: dfsans[i-1]+1 , to : dfsans[i]+1 ,  color: 'orange'}) ; 
 
 
         }
