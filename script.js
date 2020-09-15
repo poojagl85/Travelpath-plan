@@ -1,3 +1,16 @@
+class primspair{
+    constructor(vname , aqvtx, cost){
+        this.vname = vname ; 
+        this.aqvtx = aqvtx ; 
+        this.cost = cost ; 
+    }
+
+
+
+
+}
+
+
 onload = function () {
     let curr_data,V,src,dst;
 
@@ -7,6 +20,7 @@ onload = function () {
     const solve = document.getElementById('solve');
     const bfssolve = document.getElementById('bfs-solve') ;
     const dfssolve = document.getElementById('dfs-solve') ;  
+    const generatemst = document.getElementById('generate-mst') ;
     const temptext = document.getElementById('temptext');
     const temptext2 = document.getElementById('temptext2');
     const cities = ['Delhi', 'Mumbai', 'Gujarat', 'Goa', 'Kanpur', 'Jammu', 'Hyderabad', 'Bangalore', 'Gangtok', 'Meghalaya'];
@@ -152,6 +166,14 @@ onload = function () {
         temptext2.style.display  = "none";
         container2.style.display = "inline";
         network2.setData(solveusingdfs());
+    }
+
+
+    generatemst.onclick = function(){
+        temptext.style.display  = "none";
+        temptext2.style.display  = "none";
+        container2.style.display = "inline";
+        network2.setData(mst());
     }
 
     function djikstra(graph, sz, src) {
@@ -419,10 +441,89 @@ onload = function () {
 
 
     }
-
-
-
     
+
+
+    function mst(){
+        
+        data = curr_data ; 
+        const graph = createGraph(data, 0); 
+     
+        let heap = []  ; 
+        let map = new Map() ; 
+
+        for(let i = 0 ; i < graph.length ; i++){
+             np = new primspair(i , -1 , 100000) ; 
+             console.log(np.vname);
+        
+             heap.push(np) ; 
+             map.set(i , np) ; 
+
+
+        }
+       
+        let length = heap.length ; 
+        let count = 0 ; 
+        let newmst =[] ; 
+        
+
+        while(count < length){
+
+            if(count == 0 ){
+                rp = heap.shift() ; 
+                console.log(rp) ;
+                count++;
+                map.delete(rp.vname) ;
+                
+            }else{
+
+                let min = 100000 ; 
+                let vtx = -1 ; 
+                
+                for(let k = 0 ; k < heap.length ; k++){
+                    if(map.has(heap[k].vname) && heap[k].cost < min){
+                        min = heap[k].cost ; 
+                        vtx = heap[k].vname ;
+                        rp = heap[k] ; 
+
+                    }
+                }
+
+                map.delete(vtx) ; 
+                count++; 
+
+            }
+            //adding adge
+            if(rp.aqvtx !== -1 ){
+                console.log(rp.vname + "----->" + rp.aqvtx);
+                newmst.push({ from: rp.vname + 1 , to : rp.aqvtx + 1 ,  color: 'red', label : String(rp.cost)}) ; 
+            }
+
+
+            for(let j in  graph[rp.vname]){
+                let edge = graph[rp.vname][j] ; 
+                if(map.has(edge[0])){
+                    var nbrvtx = map.get(edge[0]) ; 
+                    var cost1 = nbrvtx.cost ;
+                     var newcost =  edge[1] ; 
+                     if(newcost < cost1){
+                         nbrvtx.cost = newcost ; 
+                         nbrvtx.aqvtx = rp.vname ; 
+
+                     }
+                }
+            }
+        }
+
+        const mst_ans = {
+            nodes : data['nodes'] , 
+            edges : newmst 
+        } ; 
+
+        return mst_ans ; 
+    }  
 
     genNew.click();
 };
+
+
